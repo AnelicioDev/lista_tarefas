@@ -72,21 +72,39 @@ class _NovaTarefaState extends State<TarefaPage> {
                 itemCount: tarefas.length,
                 itemBuilder: (context, index) {
                   var tarefa = tarefas[index];
-                  return Container(
-                    margin: EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: tarefa.getConcluido() == false ? Colors.amber : Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ListTile(
-                      title: Text(tarefa.getDescicao()),
-                      trailing: Checkbox(
-                        value: tarefa.getConcluido(),
-                        onChanged: (val) {
-                          setState(() {
-                            tarefa.setConcluido(val!);
-                          });
-                        },
+                  return Dismissible(
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) async{
+                      await repositorieTarefa.removerTarefa(tarefa.getId());
+                      obterTarefas();
+                    },
+                    key: Key(tarefa.getId()),
+                    child: Container(
+                      margin: EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: tarefa.getConcluido() == false
+                            ? Colors.amber
+                            : Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          style: TextStyle(
+                            decoration: tarefa.getConcluido() == true
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none,
+                            decorationThickness: 2,
+                          ),
+                          tarefa.getDescicao(),
+                        ),
+                        trailing: Checkbox(
+                          value: tarefa.getConcluido(),
+                          onChanged: (val) {
+                            setState(() {
+                              tarefa.setConcluido(val!);
+                            });
+                          },
+                        ),
                       ),
                     ),
                   );
